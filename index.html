@@ -57,13 +57,25 @@ function reserve() {
     name:  document.getElementById("name").value
   };
 
-  fetch(GAS_URL, {
+ fetch(GAS_URL, {
     method: "POST",
     body: JSON.stringify(payload)
-  })
-  .then(r => r.text())
-  .then(msg => alert(msg));
-}
+})
+.then(r => r.json())
+.then(data => {
+    console.log(data);
+
+    if (data.mode === "reserved") {
+        alert("予約が完了しました！");
+    } else {
+        alert("エラーが発生しました");
+    }
+})
+.catch(err => {
+    console.error(err);
+    alert("通信エラーが発生しました");
+});
+
 
 // 予約一覧取得
 function loadList() {
