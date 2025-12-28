@@ -1,48 +1,3 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>会議室予約システム</title>
-<style>
-  body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-  label { display: block; margin-top: 10px; font-weight: bold; }
-  input, select { width: 100%; padding: 10px; font-size: 18px; margin-top: 5px; }
-  button { margin-top: 20px; padding: 15px; width: 100%; font-size: 20px; }
-  #list { margin-top: 30px; }
-</style>
-</head>
-<body>
-
-<h2>会議室予約</h2>
-
-<label>会議室</label>
-<select id="room">
-  <option value="A">会議室A</option>
-  <option value="B">会議室B</option>
-  <option value="C">会議室C</option>
-  <option value="D">会議室D</option>
-  <option value="E">会議室E</option>
-</select>
-
-<label>日付</label>
-<input type="date" id="date">
-
-<label>開始時間</label>
-<input type="time" id="start">
-
-<label>終了時間</label>
-<input type="time" id="end">
-
-<label>予約者名</label>
-<input type="text" id="name">
-
-<button onclick="reserve()">予約する</button>
-
-<h3>予約一覧</h3>
-<button onclick="loadList()">一覧を表示</button>
-
-<div id="list"></div>
-
 <script>
 const GAS_URL ="https://script.google.com/macros/s/AKfycbxFSiynDGOy_sDz-V_493tclfdwwBEzpFVVMABMSbqhNjotNuRZte9SviHbvWE5uuXb/exec";
 
@@ -57,49 +12,38 @@ function reserve() {
     name:  document.getElementById("name").value
   };
 
- fetch(GAS_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-})
-.then(r => r.json())
-.then(data => {
-    console.log(data);
-
-    if (data.mode === "reserved") {
-        alert("予約が完了しました！");
-    } else {
-        alert("エラーが発生しました");
-    }
-})
-.catch(err => {
-    console.error(err);
-    alert("通信エラーが発生しました");
-});
-
-
-// 予約一覧取得
-function loadList() {
-  const payload = {
-    mode: "list",
-    room: document.getElementById("room").value,
-    date: document.getElementById("date").value
-  };
-
   fetch(GAS_URL, {
     method: "POST",
     body: JSON.stringify(payload)
   })
   .then(r => r.json())
   .then(data => {
-    let html = "<ul>";
-    data.forEach(ev => {
-      html += `<li>${ev.start} - ${ev.end}：${ev.title}</li>`;
-    });
-    html += "</ul>";
-    document.getElementById("list").innerHTML = html;
+      console.log(data);
+
+      if (data.mode === "reserved") {
+          alert("予約が完了しました！");
+      } else {
+          alert("エラーが発生しました");
+      }
+  })
+  .catch(err => {
+      console.error(err);
+      alert("通信エラーが発生しました");
   });
+}   // ← ★★★ ここが抜けていた！ ★★★
+
+
+// 予約一覧取得
+function loadList() {
+  fetch(GAS_URL + "?mode=list")
+    .then(r => r.json())
+    .then(data => {
+      let html = "<ul>";
+      data.forEach(ev => {
+        html += `<li>${ev.start} - ${ev.end}：${ev.title}</li>`;
+      });
+      html += "</ul>";
+      document.getElementById("list").innerHTML = html;
+    });
 }
 </script>
-
-</body>
-</html>
